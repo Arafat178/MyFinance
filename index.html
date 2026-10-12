@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>My Finance</title>
+  <!-- Google Fonts & Charts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <!-- Link to External CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#008955">
+  
+  <!-- iOS Support -->
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="My Finance">
+
+</head>
+<body>
+  <!-- System Overlays -->
+  <div id="toast" class="toast">Message</div>
+  <div id="loader" class="loader-overlay hidden"><div class="spinner"></div></div>
+
+  <!-- PIN Screen -->
+  <div id="pin-screen" class="screen active">
+    <div class="pin-container">
+      <div class="auth-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h2>My Finance</h2>
+      <p class="text-muted">Enter PIN to unlock</p>
+      <div class="pin-dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="keypad">
+        <button onclick="enterPin(1)">1</button><button onclick="enterPin(2)">2</button><button onclick="enterPin(3)">3</button>
+        <button onclick="enterPin(4)">4</button><button onclick="enterPin(5)">5</button><button onclick="enterPin(6)">6</button>
+        <button onclick="enterPin(7)">7</button><button onclick="enterPin(8)">8</button><button onclick="enterPin(9)">9</button>
+        <button onclick="clearPin()">C</button><button onclick="enterPin(0)">0</button><button onclick="backspacePin()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Application Shell -->
+  <div id="app-shell" class="screen hidden">
+    
+    <!-- DASHBOARD VIEW -->
+    <main id="view-home" class="view active">
+      <div class="header">
+        <div>
+          <h2 id="greeting">Good evening</h2>
+          <p id="current-date">Loading date...</p>
+        </div>
+        <button class="icon-btn" onclick="navTo('more')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+      </div>
+      
+      <!-- Balance Card -->
+      <div class="card balance-card">
+        <p>
+          Total Balance 
+          <button class="mask-toggle" onclick="toggleBalanceMask()">
+            <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </p>
+        <h1 id="dash-total-balance">৳ ...</h1>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button class="action-btn" onclick="openAddModal('Expense')">
+          <div class="action-icon" style="background: var(--expense); box-shadow: 0 4px 12px rgba(244,63,94,0.3);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></div>
+          <span>Expense</span>
+        </button>
+        <button class="action-btn" onclick="openAddModal('Income')">
+          <div class="action-icon" style="background: var(--income); box-shadow: 0 4px 12px rgba(16,185,129,0.3);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></div>
+          <span>Income</span>
+        </button>
+        <button class="action-btn" onclick="openAddModal('Transfer')">
+          <div class="action-icon" style="background: var(--transfer); box-shadow: 0 4px 12px rgba(139,92,246,0.3);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg></div>
+          <span>Transfer</span>
+        </button>
+      </div>
+
+      <!-- Monthly Summary -->
+      <div class="card">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <small>Income</small>
+            <strong class="text-green" id="dash-month-inc">৳ ...</strong>
+          </div>
+          <div class="summary-item">
+            <small>Expense</small>
+            <strong class="text-red" id="dash-month-exp">৳ ...</strong>
+          </div>
+          <div class="summary-item">
+            <small>Savings</small>
+            <strong id="dash-month-sav">৳ ...</strong>
+          </div>
+          <div class="summary-item">
+            <small>Savings Rate</small>
+            <strong id="dash-month-rate">...</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact Budget -->
+      <div class="card">
+        <div class="budget-info">
+          <span id="dash-budget-text" class="font-semibold">Budget: 0% used</span>
+          <span id="dash-budget-amount" class="text-muted">৳0 / ৳0</span>
+        </div>
+        <div class="progress-bg"><div id="dash-budget-bar" class="progress-fill"></div></div>
+      </div>
+
+      <!-- Accounts -->
+      <div class="section-title"><span>Accounts</span></div>
+      <div id="account-list" class="account-scroll"></div>
+      
+      <!-- Recent Transactions -->
+      <div class="section-title">
+        <span>Recent Transactions</span>
+        <button class="see-all-btn" onclick="navTo('transactions')">See all</button>
+      </div>
+      <div id="recent-transactions" class="tx-list"></div>
+    </main>
+
+    <!-- TRANSACTIONS HISTORY VIEW -->
+    <main id="view-transactions" class="view hidden">
+      <div class="header">
+        <h2>Transactions</h2>
+      </div>
+      
+      <div class="filter-panel">
+        <div class="input-group" style="margin-bottom:0;">
+          <input type="text" id="search-tx" placeholder="Search description, category..." oninput="filterTransactions()" class="form-control search-icon-input">
+        </div>
+        <button class="filter-toggle-btn mt-3" onclick="document.getElementById('advanced-filters').classList.toggle('hidden')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          Advanced Filters
+        </button>
+        
+        <div id="advanced-filters" class="hidden">
+          <div class="filter-grid">
+            <select id="filter-type" onchange="filterTransactions()" class="form-control"><option value="All">All Types</option><option value="Expense">Expense</option><option value="Income">Income</option><option value="Transfer">Transfer</option></select>
+            <select id="filter-date" onchange="toggleCustomDate(); filterTransactions()" class="form-control"><option value="All">All Dates</option><option value="Today">Today</option><option value="Week">This Week</option><option value="Month">This Month</option><option value="Custom">Custom Range</option></select>
+          </div>
+          <div id="custom-date-group" class="filter-grid hidden">
+            <div><label style="font-size:11px;color:var(--text-muted)">From</label><input type="date" id="filter-start" onchange="filterTransactions()" class="form-control"></div>
+            <div><label style="font-size:11px;color:var(--text-muted)">To</label><input type="date" id="filter-end" onchange="filterTransactions()" class="form-control"></div>
+          </div>
+          <div class="filter-grid">
+            <select id="filter-cat" onchange="filterTransactions()" class="form-control"><option value="All">All Categories</option></select>
+            <select id="filter-acc" onchange="filterTransactions()" class="form-control"><option value="All">All Accounts</option></select>
+          </div>
+          <div class="flex justify-between items-center" style="margin-top: 12px;">
+            <button onclick="clearFilters()" class="text-red font-semibold" style="font-size: 13px;">Clear Filters</button>
+            <small id="tx-count" class="text-muted">0 transactions</small>
+          </div>
+        </div>
+      </div>
+
+      <div id="full-tx-list" class="tx-list"></div>
+    </main>
+
+    <!-- ANALYTICS VIEW -->
+    <main id="view-analytics" class="view hidden">
+      <div class="header">
+        <h2>Analytics</h2>
+        <select id="timeframe-filter" onchange="resetOffsetAndLoad()" class="form-control" style="width: auto; padding: 6px 12px; font-weight: 600; font-size: 13px;">
+          <option value="Daily">Daily</option><option value="Weekly">Weekly</option><option value="Monthly" selected>Monthly</option><option value="Yearly">Yearly</option><option value="All">All Time</option>
+        </select>
+      </div>
+
+      <div class="card flex justify-between items-center" style="padding: 12px 16px;">
+        <button class="icon-btn" onclick="changeOffset(-1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+        <h4 id="analytics-period" style="margin:0; font-size: 15px; font-weight: 600;">Loading...</h4>
+        <button class="icon-btn" onclick="changeOffset(1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="padding: 0 0 12px 0;">Financial Insights</div>
+        <ul id="insights-list" class="insight-list text-muted" style="font-size: 13px; list-style-type: none;"></ul>
+      </div>
+
+      <div class="card"><div class="section-title" style="padding: 0 0 12px 0;">Income vs Expense</div><div id="bar-chart" class="chart-container"></div></div>
+      <div class="card"><div class="section-title" style="padding: 0 0 12px 0;">Expense by Category</div><div id="donut-chart" class="chart-container" style="height:260px;"></div></div>
+      <div class="card"><div class="section-title" style="padding: 0 0 12px 0;">Daily Spending Trend</div><div id="line-chart" class="chart-container"></div></div>
+      <div class="card"><div class="section-title" style="padding: 0 0 12px 0;">Monthly Trends (Last 6M)</div><div id="trend-chart" class="chart-container" style="height:260px;"></div></div>
+      <div class="card"><div class="section-title" style="padding: 0 0 12px 0;">Category Comparison</div><div id="cat-bar-chart" class="chart-container" style="height:260px;"></div></div>
+      <div class="card"><div class="section-title" style="padding: 0 0 12px 0;">Account Balances</div><div id="acc-chart" class="chart-container"></div></div>
+      
+      <div class="card" style="margin-bottom: 30px;">
+        <div class="section-title" style="padding: 0 0 12px 0;">Top Expenses</div>
+        <div id="top-expenses-list"></div>
+      </div>
+    </main>
+
+    <!-- SETTINGS VIEW -->
+    <main id="view-more" class="view hidden">
+      <div class="header"><h2>Settings</h2></div>
+      <div class="tx-list">
+        <div class="tx-item" onclick="toggleDarkMode()">
+          <div class="tx-left">
+            <div class="tx-icon-wrapper" style="color: var(--primary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></div>
+            <div class="tx-details"><h4>Toggle Theme</h4><p>Switch appearance</p></div>
+          </div>
+        </div>
+        <div class="tx-item" onclick="logout()">
+          <div class="tx-left">
+            <div class="tx-icon-wrapper" style="color: var(--expense);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            <div class="tx-details"><h4>Lock App</h4><p>Return to PIN screen</p></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="navTo('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" onclick="navTo('transactions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        <span>History</span>
+      </button>
+      <div class="nav-fab-wrapper">
+        <button class="nav-fab" onclick="openAddModal('Expense')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+      </div>
+      <button class="nav-item" onclick="navTo('analytics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+        <span>Stats</span>
+      </button>
+      <button class="nav-item" onclick="navTo('more')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>More</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ADD / EDIT TRANSACTION MODAL -->
+  <div id="add-modal" class="bottom-sheet" onclick="if(event.target===this) closeAddModal()">
+    <div class="sheet-content">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h3 id="form-modal-title">Add Transaction</h3>
+        <button class="icon-btn" onclick="closeAddModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      
+      <div class="tx-tabs" id="tx-tabs-container">
+        <button type="button" class="tx-tab active" onclick="switchTxTab('Expense')">Expense</button>
+        <button type="button" class="tx-tab" onclick="switchTxTab('Income')">Income</button>
+        <button type="button" class="tx-tab" onclick="switchTxTab('Transfer')">Transfer</button>
+      </div>
+      
+      <form id="tx-form" onsubmit="submitTransaction(event)">
+        <input type="hidden" id="tx-id" value="">
+        <input type="hidden" id="tx-type" value="Expense">
+        
+        <input type="number" id="tx-amount" class="form-control large-input" inputmode="decimal" step="0.01" required placeholder="0.00">
+        
+        <div class="input-group" id="cat-group"><label>Category</label><select id="tx-category" class="form-control" required></select></div>
+        <div class="input-group"><label id="acc-label">Account</label><select id="tx-account" class="form-control" required></select></div>
+        <div class="input-group hidden" id="to-acc-group"><label>To Account</label><select id="tx-to-account" class="form-control"></select></div>
+        
+        <div class="flex gap-3">
+          <div class="input-group" style="flex:1;"><label>Date</label><input type="date" id="tx-date" class="form-control" required></div>
+          <div class="input-group" style="flex:1;"><label>Time</label><input type="time" id="tx-time" class="form-control" required></div>
+        </div>
+        
+        <div class="input-group"><label>Description (Optional)</label><input type="text" id="tx-desc" class="form-control" placeholder="What was this for?"></div>
+        <button type="submit" id="btn-save-tx" class="primary-btn" style="margin-top: 10px;">Save Transaction</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TRANSACTION DETAILS MODAL -->
+  <div id="details-modal" class="bottom-sheet" onclick="if(event.target===this) closeDetailsModal()">
+    <div class="sheet-content">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <h3>Transaction Details</h3>
+        <button class="icon-btn" onclick="closeDetailsModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      </div>
+      <div id="details-content" style="margin-bottom:24px; font-size:14px; line-height:1.8;"></div>
+      <div class="flex gap-3">
+        <button onclick="openEditTransaction()" class="primary-btn" style="flex:1; background:var(--surface); color:var(--text-main); border:1px solid var(--border);">Edit</button>
+        <button onclick="confirmDelete()" class="primary-btn danger-btn" style="flex:1;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link to External JS -->
+  <script src="script.js"></script>
+  <script>
+    // Service Worker Registration for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(error => {
+            console.log('ServiceWorker registration failed: ', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
