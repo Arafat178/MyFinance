@@ -19,7 +19,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="My Finance">
-
 </head>
 <body>
   <!-- System Overlays -->
@@ -72,7 +71,7 @@
             <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
           </button>
         </p>
-        <h1 id="dash-total-balance">৳ ...</h1>
+        <h1 id="dash-total-balance">เงณ ...</h1>
       </div>
 
       <!-- Quick Actions -->
@@ -91,20 +90,43 @@
         </button>
       </div>
 
-      <!-- Monthly Summary -->
+      <!-- Today's Expense Card -->
+      <div class="card" style="background: var(--expense-light); border: 1px solid rgba(225, 29, 72, 0.3); padding: 12px 16px; margin-bottom: 20px;">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <div style="background: var(--expense); color: white; padding: 6px; border-radius: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+            </div>
+            <span class="font-semibold text-red" style="font-size: 14px;">Today's Expense</span>
+          </div>
+          <h3 id="dash-today-exp" class="text-red font-bold" style="font-size: 18px;">เงณ 0.00</h3>
+        </div>
+      </div>
+
+      <!-- Monthly Summary (Updated with Dynamic Controls) -->
       <div class="card">
+        <div class="flex justify-between items-center" style="margin-bottom: 16px;">
+          <button class="icon-btn" onclick="changeDashMonth(-1)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <h4 id="dash-month-label" style="margin:0; font-size: 16px; font-weight: 700;">Loading...</h4>
+          <button class="icon-btn" onclick="changeDashMonth(1)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+
         <div class="summary-grid">
           <div class="summary-item">
-            <small>Income</small>
-            <strong class="text-green" id="dash-month-inc">৳ ...</strong>
+            <small>Monthly Income</small>
+            <strong class="text-green" id="dash-month-inc">เงณ ...</strong>
           </div>
           <div class="summary-item">
-            <small>Expense</small>
-            <strong class="text-red" id="dash-month-exp">৳ ...</strong>
+            <small>Monthly Expense</small>
+            <strong class="text-red" id="dash-month-exp">เงณ ...</strong>
           </div>
           <div class="summary-item">
-            <small>Savings</small>
-            <strong id="dash-month-sav">৳ ...</strong>
+            <small>Monthly Savings</small>
+            <strong id="dash-month-sav">เงณ ...</strong>
           </div>
           <div class="summary-item">
             <small>Savings Rate</small>
@@ -117,7 +139,7 @@
       <div class="card">
         <div class="budget-info">
           <span id="dash-budget-text" class="font-semibold">Budget: 0% used</span>
-          <span id="dash-budget-amount" class="text-muted">৳0 / ৳0</span>
+          <span id="dash-budget-amount" class="text-muted">เงณ 0 / เงณ 0</span>
         </div>
         <div class="progress-bg"><div id="dash-budget-bar" class="progress-fill"></div></div>
       </div>
