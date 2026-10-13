@@ -1,11 +1,12 @@
 // ==========================================
 // API Configuration - তোমার URL এখানে বসাও
 // ==========================================
-const API_URL = "https://script.google.com/macros/s/AKfycbzm8momDYiD2RS16HYH4Y-uI04rpwLNhg04H0hz-u2_dmTxKzkmypdm1G7S2s__OT7PcQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzvInFvkKfjUdo6DDgWvrDJwZ4VAc8whp9YYxCQSQV4y-RS8q0GfyMFnZezkmOSo3ElUw/exec";
 
 let currentPin = "";
 let formOptions = null;
 let analyticsOffset = 0; 
+let dashMonthOffset = 0; // NEW: Dashboard-er month track korar jonno
 let transactionsData = [];
 let currentTx = null;
 let isBalanceHidden = localStorage.getItem('hideBalance') === 'true';
@@ -123,19 +124,44 @@ function getTxIcon(type, categoryStr) {
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>`;
 }
 
+// NEW: Month Navigator for Dashboard
+function changeDashMonth(step) {
+  dashMonthOffset += step;
+  loadDashboard();
+}
+
 async function loadDashboard() {
   toggleLoader(true);
   const hr = new Date().getHours();
   document.getElementById('greeting').innerText = hr < 12 ? 'Good morning' : (hr < 18 ? 'Good afternoon' : 'Good evening');
   document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', month: 'short', day: 'numeric' });
 
-  let res = await apiCall('getDashboardData');
+  // ডাইনামিক মাস ও বছরের নাম তৈরি করা (যেমন: June, 2026)
+  let targetDate = new Date();
+  targetDate.setMonth(targetDate.getMonth() + dashMonthOffset);
+  let monthName = targetDate.toLocaleString('default', { month: 'long' });
+  let year = targetDate.getFullYear();
+  document.getElementById('dash-month-label').innerText = `${monthName}, ${year}`;
+
+  // API তে monthOffset পাঠানো হচ্ছে
+  let res = await apiCall('getDashboardData', { monthOffset: dashMonthOffset });
   toggleLoader(false);
+  
   if (res.success) {
     const d = res.data;
     rawTotalBalance = d.totalBalance;
     updateBalanceDisplay();
+
+    // Today's Expense Calculation
+    let todayStr = new Date().toLocaleDateString('en-CA'); 
+    let calculatedTodayExp = d.recentTransactions
+      .filter(tx => tx.type === 'Expense' && tx.date === todayStr)
+      .reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
+    let finalTodayExp = d.todayExpense !== undefined ? d.todayExpense : calculatedTodayExp;
     
+    let todayExpEl = document.getElementById('dash-today-exp');
+    if(todayExpEl) todayExpEl.innerText = formatMoney(finalTodayExp);
+
     document.getElementById('dash-month-inc').innerText = formatMoney(d.thisMonthIncome);
     document.getElementById('dash-month-exp').innerText = formatMoney(d.thisMonthExpense);
     
@@ -568,6 +594,7 @@ function logout() {
   document.getElementById('app-shell').classList.remove('active'); 
   document.getElementById('app-shell').classList.add('hidden'); 
   document.getElementById('pin-screen').classList.add('active'); 
+  dashMonthOffset = 0; // Reset on logout
   navTo('home'); 
   clearPin(); 
   showToast("App Locked"); 
